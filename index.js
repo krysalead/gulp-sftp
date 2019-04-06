@@ -1,6 +1,6 @@
 'use strict';
 var clearDirectory = require('./clear').clearDirectory;
-var log = require('fancy-log');
+var flog = require('fancy-log');
 var colors = require('ansi-colors');
 var PluginError = require('plugin-error');
 var path = require('path');
@@ -123,9 +123,9 @@ module.exports = function (options) {
             return uploader(sftpCache);
 
         if(options.password){
-            log('Authenticating with password.');
+            flog('Authenticating with password.');
         }else if(key){
-            log('Authenticating with private key.');
+            flog('Authenticating with private key.');
         }
 
         var c = new Connection();
@@ -137,7 +137,7 @@ module.exports = function (options) {
                     throw err;
 
                 sftp.on('end', function() {
-                    log('SFTP :: SFTP session closed');
+                    flog('SFTP :: SFTP session closed');
                     sftpCache=null;
                     if(!finished)
                         this.emit('error', new PluginError('gulp-sftp', "SFTP abrupt closure"));
@@ -162,17 +162,17 @@ module.exports = function (options) {
             //return cb(err);
         });
         c.on('end', function() {
-            log('Connection :: end');
+            flog('Connection :: end');
         });
         c.on('close', function(err) {
             if(!finished){
-                log('gulp-sftp', "SFTP abrupt closure");
+                flog('gulp-sftp', "SFTP abrupt closure");
                 self.emit('error', new PluginError('gulp-sftp', "SFTP abrupt closure"));
             }
             if (err) {
-                log('Connection :: close, ', colors.red('Error: ' + err));
+                flog('Connection :: close, ', colors.red('Error: ' + err));
             } else {
-                log('Connection :: closed');
+                flog('Connection :: closed');
             }
             
         });
@@ -260,9 +260,9 @@ module.exports = function (options) {
                     if (!exist) {
                         sftp.mkdir(d, {mode: '0755'}, function(err){//REMOTE PATH
                             if(err){
-                                log('SFTP Mkdir Error:', colors.red(err + " " +d));
+                                flog('SFTP Mkdir Error:', colors.red(err + " " +d));
                             }else{
-                                log('SFTP Created:', colors.green(d));
+                                flog('SFTP Created:', colors.green(d));
                             }
                             next();
                         });
@@ -295,7 +295,7 @@ module.exports = function (options) {
                     uploadedBytes+=highWaterMark;
                     var p = Math.round((uploadedBytes/size)*100);
                     p = Math.min(100,p);
-                    log('gulp-sftp:',finalRemotePath,"uploaded",(uploadedBytes/1000)+"kb");
+                    flog('gulp-sftp:',finalRemotePath,"uploaded",(uploadedBytes/1000)+"kb");
                 });
 
 
@@ -307,7 +307,7 @@ module.exports = function (options) {
                         this.emit('error', new PluginError('gulp-sftp', err));
                     else{
                         if (logFiles) {
-                            log('gulp-sftp:', colors.green('Uploaded: ') +
+                            flog('gulp-sftp:', colors.green('Uploaded: ') +
                                 file.relative +
                                 colors.green(' => ') +
                                 finalRemotePath);
@@ -327,9 +327,9 @@ module.exports = function (options) {
 
     }, function (cb) {
         if (fileCount > 0) {
-            log('gulp-sftp:', colors.green(fileCount, fileCount === 1 ? 'file' : 'files', 'uploaded successfully'));
+            flog('gulp-sftp:', colors.green(fileCount, fileCount === 1 ? 'file' : 'files', 'uploaded successfully'));
         } else {
-            log('gulp-sftp:', colors.yellow('No files uploaded'));
+            flog('gulp-sftp:', colors.yellow('No files uploaded'));
         }
         finished=true;
         if(sftpCache)
