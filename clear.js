@@ -1,10 +1,11 @@
 const async = require('async');
+const colors = require('ansi-colors');
+const flog = require('fancy-log');
 const path = require('path');
-const gutil = require('gulp-util');
 
 function log(...msg) {
     msg.unshift('gulp-sftp:');
-    gutil.log.apply(console, msg);
+    flog.apply(console, msg);
 }
 
 function isDirectory(entry) {
@@ -25,11 +26,11 @@ function clearDirectory(sftp, dirPath, callback) {
 
         if (isDirectory(entry)) {
             clearDirectory(sftp, entryPath, () => {
-                log(gutil.colors.green('Deleting remote directory'), entryPath);
+                log(colors.green('Deleting remote directory'), entryPath);
                 sftp.rmdir(entryPath, callback);
             });
         } else {
-            log(gutil.colors.green('Deleting remote file'), entryPath);
+            log(colors.green('Deleting remote file'), entryPath);
             sftp.unlink(entryPath, callback);
         }
     }
@@ -40,7 +41,7 @@ function clearDirectory(sftp, dirPath, callback) {
 }
 /**
  * Clean the top level directory once all subdirectory and files are removed
- * @param {SFTPStream} sftp 
+ * @param {SFTPStream} sftp
  * @param {string} dirPath remote directory
  * @param {(error)=>{}} callback Callback
  */
